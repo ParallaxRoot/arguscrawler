@@ -1,24 +1,21 @@
 package logger
 
-import (
-	"log"
-	"os"
-)
+import "log"
 
-type Logger struct {
-	l *log.Logger
-}
+type Logger struct{}
 
 func New() *Logger {
-	return &Logger{
-		l: log.New(os.Stdout, "[ArgusCrawler] ", log.LstdFlags),
-	}
+	return &Logger{}
 }
 
-func (lg *Logger) Infof(format string, v ...interface{}) {
-	lg.l.Printf(format, v...)
+func (l *Logger) Info(msg string) {
+	log.Println(msg)
 }
 
-func (lg *Logger) Errorf(format string, v ...interface{}) {
-	lg.l.Printf("[ERROR] "+format, v...)
+func (l *Logger) Infof(format string, v ...interface{}) {
+	log.Printf(format, v...)
+}
+
+func (l *Logger) Errorf(format string, v ...interface{}) {
+	log.Printf(format, v...)
 }
