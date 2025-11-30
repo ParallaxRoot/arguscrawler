@@ -1,51 +1,35 @@
 package main
 
 import (
-	"context"
 	"flag"
 	"fmt"
 	"os"
 
-	"github.com/ParallaxRoot/arguscrawler/internal/config"
-	"github.com/ParallaxRoot/arguscrawler/internal/logger"
-	"github.com/ParallaxRoot/arguscrawler/internal/passive"
+	"github.com/ParallaxRoot/arguscrawler/internal/crawl"
 )
 
 func main() {
-	printBanner()
-
-	domain := flag.String("d", "", "Domain to crawl (e.g. example.com)")
+	domain := flag.String("d", "", "Domain to crawl (example.com)")
 	flag.Parse()
 
 	if *domain == "" {
-		fmt.Println("[!] Provide -d <domain>")
+		fmt.Println("Use: arguscrawler -d example.com")
 		os.Exit(1)
 	}
 
-	log := logger.New()
+	fmt.Println("ArgusCrawler — CommonCrawl extractor")
+	fmt.Println("Domain:", *domain)
 
-	cfg := config.Config{
-		Domain: *domain,
-	}
+	cc := commoncrawl.New()
 
-	source := passive.NewCommonCrawlSource(log)
-
-	results, err := source.Enum(context.Background(), cfg.Domain)
+	subs, err := cc.Fetch(*domain)
 	if err != nil {
-		log.Errorf("CommonCrawl error: %v", err)
+		fmt.Println("Error:", err)
 		os.Exit(1)
 	}
 
-	log.Infof("Found %d subdomains:", len(results))
-	for _, s := range results {
-		fmt.Println(s)
+	fmt.Printf("\nFound %d results:\n", len(subs))
+	for _, s := range subs {
+		fmt.Println(" -", s)
 	}
-}
-
-func printBanner() {
-	fmt.Println(`
-   ╔══════════════════════════════════════════════╗
-   ║              ArgusCrawler v0.1              ║
-   ║                CommonCrawl Mode             ║
-   ╚══════════════════════════════════════════════╝`)
 }
